@@ -2,7 +2,7 @@ const redux = require("redux");
 const axios = require("axios");
 const createStore = redux.createStore;
 const applyMiddleware = redux.applyMiddleware;
-const middlewareThunk = require("redux-thunk").default;
+const thunk = require("redux-thunk").default;
 
 // action
 const FETCH_USER_REQ = "FETCH_USER_REQ";
@@ -64,9 +64,14 @@ const fetchUser = () => {
   return (dispatch) => {
     dispatch(fetchUserReq());
     axios
-      .get("https://jsonplaceholder.typicode.com/users")
+      .get("https://jsonplaceholder.typicode.com/users", {
+        headers: {
+          // jalankn encoding agar data bisa di encode
+          "Accept-Encoding": "application/json",
+        },
+      })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         dispatch(fetchUserSuccess(response.data));
       })
       .catch((error) => {
@@ -76,7 +81,7 @@ const fetchUser = () => {
   };
 };
 
-const store = createStore(userReducer, applyMiddleware(middlewareThunk));
+const store = createStore(userReducer, applyMiddleware(thunk));
 
 store.subscribe(() => console.log(store.getState()));
 store.dispatch(fetchUser());
